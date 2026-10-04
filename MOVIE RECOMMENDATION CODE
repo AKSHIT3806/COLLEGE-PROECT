@@ -1,0 +1,71 @@
+Step 1 — Dataset inspection
+
+print(df.head())
+print(df.info())
+print(df.isnull().sum())
+
+Step 2 — Numerical calculation and visualization 
+
+import numpy as np
+import matplotlib.pyplot as plt
+avg = np.mean(df["User"])
+plt.figure(figsize=(14, 7))
+plt.bar(df["Movie"], df["User"])
+plt.xlabel("Movie")
+plt.ylabel("User Rating")
+plt.title("Movie User Ratings")
+plt.xticks(rotation=45, ha='right')
+plt.grid(axis='y', linestyle='--', alpha=0.5)
+plt.tight_layout()
+plt.show()
+ 
+Step 3 — Machine Learning 
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+X = df[["IMDb", "Pop", "Votes", "Runtime", "Year"]]
+y = df["User"]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+model = LinearRegression()
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+
+
+
+
+Step 4 — Actual vs Predicted 
+
+results = pd.DataFrame({
+    "MOVIE": df.loc[y_test.index, "Movie"].values,
+    "ACTUAL": y_test.values,
+    "PREDICTED": predictions
+})
+r2 = r2_score(y_test, predictions)
+print("R² Score:", r2)
+print("Actual vs Predicted Ratings:")
+display(results.round(2))
+
+Step 5 — Prediction graph 
+
+plt.figure(figsize=(8, 6))
+plt.scatter(y_test, predictions, s=80)
+plt.plot(
+    [y_test.min(), y_test.max()],
+    [y_test.min(), y_test.max()],
+    linestyle="--"
+)
+plt.xlabel("Actual User Rating")
+plt.ylabel("Predicted User Rating")
+plt.title("Actual vs Predicted User Ratings")
+plt.show()
+
+
+
+
+
+
+
+
